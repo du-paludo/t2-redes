@@ -1,54 +1,99 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-int main(void){
+// Start delimiter: 01011011
+// End delimiter: 01011011
+
+struct Machine {
+    char* previous_ip;
+    char* next_ip;
+    int start_port;
+    int end_port;
+};
+typedef struct Machine Machine_t;
+
+int main(int argc, char **argv) {
+    char* ipAddresses[4] = {"10.254.223.40", "10.254.223.41", "10.254.223.44", "10.254.223.45"};
+    int ports[4] = {2637, 2638, 2639, 2640};
+    Machine_t machine;
+
+    int i = atoi(argv[1]);
+    
+    machine.previous_ip = ipAddresses[(i + 3) % 4];
+    machine.next_ip = ipAddresses[(i + 1) % 4];
+    machine.start_port = ports[(i + 3) % 4];
+    machine.end_port = ports[(i + 1) % 4];
+
     int socket_desc;
-    struct sockaddr_in server_addr;
-    char server_message[2000], client_message[2000];
-    int server_struct_length = sizeof(server_addr);
+    struct sockaddr_in previous_addr, next_addr;
+
+    /*
+    struct sockaddr_in {
+	__uint8_t       sin_len;
+	sa_family_t     sin_family;
+	in_port_t       sin_port;
+	struct  in_addr sin_addr;
+	char            sin_zero[8];
+    };
+    */
+
+    char sent_message[2000], received_message[2000];
+    int previous_struct_length = sizeof(previous_addr);
+    int next_struct_length = sizeof(next_addr);
     
     // Clean buffers:
-    memset(server_message, '\0', sizeof(server_message));
-    memset(client_message, '\0', sizeof(client_message));
+    memset(sent_message, '\0', sizeof(sent_message));
+    memset(received_message, '\0', sizeof(received_message));
     
     // Create socket:
     socket_desc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    
-    if(socket_desc < 0){
+
+    if (socket_desc < 0) {
         printf("Error while creating socket\n");
         return -1;
     }
     printf("Socket created successfully\n");
     
+    previous_addr.sin_family = AF_INET;
+    previous_addr.sin_port = htons(machine.start_port);
+    previous_addr.sin_addr.s_addr = inet_addr(machine.previous_ip);
+
     // Set port and IP:
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(2000);
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    
+    next_addr.sin_family = AF_INET;
+    next_addr.sin_port = htons(machine.end_port);
+    next_addr.sin_addr.s_addr = inet_addr(machine.next_ip);
+
+    if (bind(socket, (struct sockaddr*)&previous_addr, sizeof(previous_addr)) < 0) {
+        printf("Couldn't bind to the port\n");
+        return -1;
+    }
+    printf("Done with binding\n");
+
     // Get input from the user:
     printf("Enter message: ");
-    gets(client_message);
+    gets(sent_message);
+
+     // Receive the server's response:
+    if (recvfrom(socket, received_message, sizeof(received_message), 0,
+        (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+        printf("Couldn't receive message\n");
+        return -1;
+    }
     
     // Send the message to server:
-    if(sendto(socket_desc, client_message, strlen(client_message), 0,
-         (struct sockaddr*)&server_addr, server_struct_length) < 0){
+    if (sendto(socket, sent_message, strlen(sent_message), 0,
+        (struct sockaddr*)&next_addr, next_struct_length) < 0) {
         printf("Unable to send message\n");
         return -1;
     }
     
-    // Receive the server's response:
-    if(recvfrom(socket_desc, server_message, sizeof(server_message), 0,
-         (struct sockaddr*)&server_addr, &server_struct_length) < 0){
-        printf("Error while receiving server's msg\n");
-        return -1;
-    }
-    
-    printf("Server's response: %s\n", server_message);
+    printf("Server's response: %s\n", received_message);
     
     // Close the socket:
     // close(socket_desc);
-    
+
     return 0;
 }

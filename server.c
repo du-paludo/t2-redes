@@ -3,12 +3,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-int main(void){
+int main() {
     int socket_desc;
     struct sockaddr_in server_addr, client_addr;
     char server_message[2000], client_message[2000];
     int client_struct_length = sizeof(client_addr);
-    
+
     // Clean buffers:
     memset(server_message, '\0', sizeof(server_message));
     memset(client_message, '\0', sizeof(client_message));
