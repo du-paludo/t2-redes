@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     machine.end_port = ports[(i + 1) % 4];
 
     int socket_desc;
-    struct sockaddr_in previous_addr, next_addr;
+    struct sockaddr_in previous_addr, next_addr, current_addr; 
 
     /*
     struct sockaddr_in {
@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
     char sent_message[2000], received_message[2000];
     int previous_struct_length = sizeof(previous_addr);
     int next_struct_length = sizeof(next_addr);
+    int current_struct_lenght = sizeof(current_addr);
     
     // Clean buffers:
     memset(sent_message, '\0', sizeof(sent_message));
@@ -57,20 +58,31 @@ int main(int argc, char **argv) {
         return -1;
     }
     printf("Socket created successfully\n");
+
+    current_addr.sin_family = AF_INET;
+    current_addr.sin_port = htons(machine.start_port);
+    current_addr.sin_addr.s_addr = inet_addr(ipAddresses[i]);
     
     previous_addr.sin_family = AF_INET;
     previous_addr.sin_port = htons(machine.start_port);
     previous_addr.sin_addr.s_addr = inet_addr(machine.previous_ip);
+
+
 
     // Set port and IP:
     next_addr.sin_family = AF_INET;
     next_addr.sin_port = htons(machine.end_port);
     next_addr.sin_addr.s_addr = inet_addr(machine.next_ip);
 
-    if (bind(socket_desc, (struct sockaddr*)&previous_addr, sizeof(previous_addr)) < 0) {
+    /* if (bind(socket_desc, (struct sockaddr*)&previous_addr, sizeof(previous_addr)) < 0) {
+        printf("Couldn't bind to the port\n");
+        return -1;
+    } */
+    if (bind(socket_desc, (struct sockaddr*)&current_addr, sizeof(current_addr)) < 0) {
         printf("Couldn't bind to the port\n");
         return -1;
     }
+
     printf("Done with binding\n");
 
     // Get input from the user:
