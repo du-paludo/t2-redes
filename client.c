@@ -76,10 +76,10 @@ int main(int argc, char **argv) {
         printf("Couldn't bind to the port\n");
         return -1;
     } */
-    if (bind(socket_desc, (struct sockaddr*)&current_addr, sizeof(current_addr)) < 0) {
+    /* if (bind(socket_desc, (struct sockaddr*)&current_addr, sizeof(current_addr)) < 0) {
         printf("Couldn't bind to the port\n");
         return -1;
-    }
+    } */
 
     printf("Done with binding\n");
 
