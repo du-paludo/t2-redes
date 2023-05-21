@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
     Machine_t machine;
 
     int i = atoi(argv[1]);
+    int token = (i == 0) ? 1 : 0;
     
     machine.previous_ip = ipAddresses[(i + 3) % 4];
     machine.next_ip = ipAddresses[(i + 1) % 4];
@@ -74,22 +75,76 @@ int main(int argc, char **argv) {
 
     // Get input from the user:
     while (1) {
-        printf("Enter message: ");
-        gets(sent_message);
-    
-        // Send the message to server
-        if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
-            (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
-            printf("Couldn't receive message\n");
-            return -1;
-        }
-
-        if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
-            (struct sockaddr*)&next_addr, next_struct_length) < 0) {
-            printf("Unable to send message\n");
-            return -1;
+        if (token) {
+            // Machine has the token, so it can send a message
+            printf("Enter message: ");
+            gets(sent_message);
+            
+            // Send the message to the next machine
+            if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
+                (struct sockaddr*)&next_addr, next_struct_length) < 0) {
+                printf("Unable to send message\n");
+                return -1;
+            }
+            
+            // Receive the server's response (echoed message)
+            if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+                (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+                printf("Couldn't receive message\n");
+                return -1;
+            }
+            
+            printf("Server's response: %s\n", received_message);
+            
+            // Pass the token to the next machine
+            token = 0;
+        } else {
+            // Machine doesn't have the token, so it can only receive messages
+            
+            // Receive a message from the previous machine
+            if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+                (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+                printf("Couldn't receive message\n");
+                return -1;
+            }
+            
+            printf("Received message: %s\n", received_message);
+            
+            // Send the received message back to the previous machine
+            if (sendto(socket_desc, received_message, strlen(received_message), 0,
+                (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
+                printf("Unable to send message\n");
+                return -1;
+            }
+            
+            // Pass the token to the next machine
+            token = 1;
         }
     }
+
+        
+        // printf("Enter message: ");
+        // gets(sent_message);
+    
+        // Send the message to server
+    //     if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+    //         (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+    //         printf("Couldn't receive message\n");
+    //         return -1;
+    //     }
+
+    //     // implements token passing algorithm
+    //     if (strcmp(received_message, "01011011") == 0) {
+    //         printf("Token received\n");
+    //         printf("Enter message: ");
+    //         gets(sent_message);
+    //     }
+    //     if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
+    //         (struct sockaddr*)&next_addr, next_struct_length) < 0) {
+    //         printf("Unable to send message\n");
+    //         return -1;
+    //     }
+    // }
         
     // Close the socket:
     // close(socket_desc);
