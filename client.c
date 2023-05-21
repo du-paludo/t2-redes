@@ -75,13 +75,6 @@ int main(int argc, char **argv) {
     // Get input from the user:
     printf("Enter message: ");
     gets(sent_message);
-
-     // Receive the server's response:
-    if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
-        (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
-        printf("Couldn't receive message\n");
-        return -1;
-    }
     
     // Send the message to server:
     if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
@@ -89,9 +82,13 @@ int main(int argc, char **argv) {
         printf("Unable to send message\n");
         return -1;
     }
-    
-    printf("Server's response: %s\n", received_message);
-    
+
+    if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+        (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+        printf("Couldn't receive message\n");
+        return -1;
+    }
+        
     // Close the socket:
     // close(socket_desc);
 
