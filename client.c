@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     next_addr.sin_port = htons(machine.end_port);
     next_addr.sin_addr.s_addr = inet_addr(machine.next_ip);
 
-    if (bind(socket, (struct sockaddr*)&previous_addr, sizeof(previous_addr)) < 0) {
+    if (bind(socket_desc, (struct sockaddr*)&previous_addr, sizeof(previous_addr)) < 0) {
         printf("Couldn't bind to the port\n");
         return -1;
     }
@@ -77,14 +77,14 @@ int main(int argc, char **argv) {
     gets(sent_message);
 
      // Receive the server's response:
-    if (recvfrom(socket, received_message, sizeof(received_message), 0,
+    if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
         (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
         printf("Couldn't receive message\n");
         return -1;
     }
     
     // Send the message to server:
-    if (sendto(socket, sent_message, strlen(sent_message), 0,
+    if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
         (struct sockaddr*)&next_addr, next_struct_length) < 0) {
         printf("Unable to send message\n");
         return -1;
