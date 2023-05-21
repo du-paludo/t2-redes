@@ -61,13 +61,11 @@ int main(int argc, char **argv) {
 
     current_addr.sin_family = AF_INET;
     current_addr.sin_port = htons(machine.start_port);
-    current_addr.sin_addr.s_addr = inet_addr(ipAddresses[i]);
+    current_addr.sin_addr.s_addr = INADDR_ANY;
     
     previous_addr.sin_family = AF_INET;
     previous_addr.sin_port = htons(machine.start_port);
     previous_addr.sin_addr.s_addr = inet_addr(machine.previous_ip);
-
-
 
     // Set port and IP:
     next_addr.sin_family = AF_INET;
