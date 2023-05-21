@@ -73,20 +73,22 @@ int main(int argc, char **argv) {
     printf("Done with binding\n");
 
     // Get input from the user:
-    printf("Enter message: ");
-    gets(sent_message);
+    while (1) {
+        printf("Enter message: ");
+        gets(sent_message);
     
-    // Send the message to server:
-    if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
-        (struct sockaddr*)&next_addr, next_struct_length) < 0) {
-        printf("Unable to send message\n");
-        return -1;
-    }
+        // Send the message to server
+        if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+            (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+            printf("Couldn't receive message\n");
+            return -1;
+        }
 
-    if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
-        (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
-        printf("Couldn't receive message\n");
-        return -1;
+        if (sendto(socket_desc, sent_message, strlen(sent_message), 0,
+            (struct sockaddr*)&next_addr, next_struct_length) < 0) {
+            printf("Unable to send message\n");
+            return -1;
+        }
     }
         
     // Close the socket:
