@@ -115,11 +115,13 @@ int main(int argc, char **argv) {
             if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
                 (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
                 printf("Couldn't receive message\n");
-                perror();
-                return -1;
-            }
+                perror("Error: ");
+                // return -1;
+            } else {
+		token = 1;
+	    }
             
-            // printf("Received message: %s\n", received_message);
+            printf("Received message: %s\n", received_message);
             
             // // Send the received message back to the previous machine
             // if (sendto(socket_desc, received_message, strlen(received_message), 0,
@@ -129,7 +131,7 @@ int main(int argc, char **argv) {
             // }
             
             // Pass the token to the next machine
-            token = 1;
+            // token = 1;
         }
     }
 
