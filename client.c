@@ -98,13 +98,13 @@ int main(int argc, char **argv) {
             }
             
             // Receive the server's response (echoed message)
-            if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
-                (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
-                printf("Couldn't receive message\n");
-                return -1;
-            }
+            // if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+            //     (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
+            //     printf("Couldn't receive message\n");
+            //     return -1;
+            // }
             
-            printf("Server's response: %s\n", received_message);
+            // printf("Server's response: %s\n", received_message);
             
             // Pass the token to the next machine
             token = 0;
@@ -118,14 +118,14 @@ int main(int argc, char **argv) {
                 return -1;
             }
             
-            printf("Received message: %s\n", received_message);
+            // printf("Received message: %s\n", received_message);
             
-            // Send the received message back to the previous machine
-            if (sendto(socket_desc, received_message, strlen(received_message), 0,
-                (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
-                printf("Unable to send message\n");
-                return -1;
-            }
+            // // Send the received message back to the previous machine
+            // if (sendto(socket_desc, received_message, strlen(received_message), 0,
+            //     (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
+            //     printf("Unable to send message\n");
+            //     return -1;
+            // }
             
             // Pass the token to the next machine
             token = 1;
