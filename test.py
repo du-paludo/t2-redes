@@ -6,8 +6,9 @@ id = int(input())
 next_node_port = 2638 + id
 
 for i in range(0, 4):
-    sock[i] = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock[i].bind('localhost', 2637 + i)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind(('localhost', 2637 + i))
+    sock.append(s);
 
 # s1 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # s1.bind('localhost', 2637)
@@ -31,7 +32,7 @@ def send_receive_message(node_id, next_node_id, previous_node_id):
     print(f"Node {node_id} sent: {data.decode()}")
 
 initial_message = b"Initial message"
-s[0].sendto(initial_message, ('localhost', next_node_port))
+sock[0].sendto(initial_message, ('localhost', next_node_port))
 print(f"Node 1 sent: {initial_message.decode()}")
 
 # Enter the communication loop
