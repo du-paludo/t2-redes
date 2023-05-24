@@ -16,7 +16,7 @@ struct Machine {
 typedef struct Machine Machine_t;
 
 int main(int argc, char **argv) {
-    char* ipAddresses[4] = {"10.254.223.40", "10.254.223.41", "10.254.223.44", "10.254.223.45"};
+    char* ipAddresses[4] = {"10.254.223.29", "10.254.223.30", "10.254.223.31", "10.254.223.32"};
     int ports[4] = {2637, 2638, 2639, 2640};
     Machine_t machine;
 
@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
     printf("Socket created successfully\n");
 
     current_addr.sin_family = AF_INET;
-    current_addr.sin_port = htons(machine.start_port);
-    current_addr.sin_addr.s_addr = inet_addr(ipAddresses[i]);
+    current_addr.sin_port = htons(ports[i]);
+    // current_addr.sin_addr.s_addr = inet_addr(ipAddresses[i]);
     
     previous_addr.sin_family = AF_INET;
     previous_addr.sin_port = htons(machine.start_port);
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
             
             // Receive the server's response (echoed message)
             if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
-                (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
+                (struct sockaddr*)&previous_addr, previous_struct_length) < 0) {
                 printf("Couldn't receive message\n");
                 return -1;
             }
