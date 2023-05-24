@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
             if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
                 (struct sockaddr*)&previous_addr, &previous_struct_length) < 0) {
                 printf("Couldn't receive message\n");
-                // return -1;
+                perror();
+                return -1;
             }
             
             // printf("Received message: %s\n", received_message);
