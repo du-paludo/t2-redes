@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     memset(received_message, '\0', sizeof(received_message));
     
     // Create socket:
-    socket_desc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    socket_desc = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (socket_desc < 0) {
         printf("Error while creating socket\n");
