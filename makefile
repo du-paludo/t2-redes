@@ -5,19 +5,22 @@
 
 # .PHONY: all debug clean purge
 
-all: client server
+all: client
 
-client: client.o
-	gcc -o client client.o
+client: client.o deck.o
+	gcc -o client client.o deck.o
 
-server: server.o
-	gcc -o server server.o
+# server: server.o
+# 	gcc -o server server.o
 
 client.o: client.c 
 	gcc -c client.c
 
-server.o: server.c
-	gcc -c server.c
+deck.o: deck.c
+	gcc -c deck.c
+
+# server.o: server.c
+# 	gcc -c server.c
 
 # %.o: %.c %.h
 # 	$(CC) $(CFLAGS) -c $< -o $@

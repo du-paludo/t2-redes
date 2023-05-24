@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include "deck.h"
 
 // Start delimiter: 01011011
 // End delimiter: 01011011
@@ -16,12 +17,21 @@ struct Machine {
 typedef struct Machine Machine_t;
 
 int main(int argc, char **argv) {
+
     char* ipAddresses[4] = {"10.254.223.29", "10.254.223.30", "10.254.223.31", "10.254.223.32"};
     int ports[4] = {2637, 2638, 2639, 2640};
     Machine_t machine;
 
     int i = atoi(argv[1]);
     int token = (i == 0) ? 1 : 0;
+
+    if (i == 0) {
+        int* deck = createsDeck();
+        //printDeck(deck);
+        shuffleDeck(deck);
+        //printDeck(deck);
+        dealCards(deck);
+    }
     
     machine.previous_ip = ipAddresses[(i + 3) % 4];
     machine.next_ip = ipAddresses[(i + 1) % 4];
@@ -30,7 +40,7 @@ int main(int argc, char **argv) {
 
     int socket_desc;
     struct sockaddr_in current_addr, previous_addr, next_addr; 
-
+    
     /*
     struct sockaddr_in {
 	__uint8_t       sin_len;
