@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
             // Machine doesn't have the token, so it can only receive messages
             
             // Receive a message from the previous machine
-            if (recvfrom(socket_desc, received_message, sizeof(received_message), 0,
+            if (recvfrom(socket_desc, received_message, 100 * sizeof(unsigned char), 0,
                 (struct sockaddr*) &previous_addr, &previous_struct_length) < 0) {
                 printf("Couldn't receive message\n");
                 perror("Error: ");
