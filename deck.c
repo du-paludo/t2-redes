@@ -52,16 +52,30 @@ void printDeck(unsigned char* deck) {
     printf("\n");
 }
 
-void dealCards(unsigned char* deck) {
-    //unsigned char* mensagem = malloc(100000 * sizeof(unsigned char));
+unsigned char* dealCards(unsigned char* deck) {
+    unsigned char* mensagem = malloc(85 * sizeof(unsigned char));
+    const char* delimiter = "01011011";
+    const char* confirmation = "00000000";
+
+    mensagem[0] = strtol(delimiter, NULL, 2); // Start delimiter
+    mensagem[1] = '0'; // Origin
+    mensagem[2] = '0'; // Type of message
+    for (int i = 3; i <= 82; i++) {
+        mensagem[i] = deck[i-3]; // Cards
+    }
+    mensagem[83] = strtol(confirmation, NULL, 2); // Received confirmation
+    mensagem[84] = strtol(delimiter, NULL, 2); // End delimiter
+    mensagem[85] = '\0';
+
+    return mensagem;
     // unsigned char* charDeck = malloc(80 * sizeof(unsigned char));
     // snprintf(charDeck, sizeof(charDeck), "%d", deck);
     // printf("%s\n", deck);
     // printf("%s\n", charDeck);
     // strcat(mensagem, charDeck);
-    for (int i = 0; i < 80; i++) {
-        printf("%u ", deck[i]);
-    }
-    printf("\n");
-    //printf("%s\n", mensagem);
+    // for (int i = 0; i < 85; i++) {
+    //     printf("%u ", mensagem[i]);
+    // }
+    // printf("\n");
+    // printf("%s\n", mensagem);
 }

@@ -7,8 +7,8 @@
 
 all: client
 
-client: client.o deck.o
-	gcc -o client client.o deck.o
+client: client.o deck.o package.o
+	gcc -o client client.o deck.o package.o
 
 # server: server.o
 # 	gcc -o server server.o
@@ -18,6 +18,9 @@ client.o: client.c
 
 deck.o: deck.c
 	gcc -c deck.c
+
+package.o: package.c
+	gcc -c package.c
 
 # server.o: server.c
 # 	gcc -c server.c

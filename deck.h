@@ -9,6 +9,6 @@ void swap(unsigned char* deck, int a, int b);
 
 void printDeck(unsigned char* deck);
 
-void dealCards(unsigned char* deck);
+unsigned char* dealCards(unsigned char* deck);
 
 #endif
