@@ -4,8 +4,8 @@
 void unpackMessage(unsigned char* message) {
     int i = 0;
     while (message[i] != 0) {
-        if (message[i] == 91) {
-            printf("ok\n");
-        }
+        printf("%d ", i);
+        printf("%u\n", message[i]);
+        i++;
     }
 }
