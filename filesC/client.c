@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
             } else {
 		token = 1;
 	    }
-            printf("Received message: %s\n", received_message);
+            //printf("Received message: %s\n", received_message);
             unpackMessage(received_message);
             
             // // Send the received message back to the previous machine
