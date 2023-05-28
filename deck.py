@@ -6,6 +6,8 @@ def createDeck():
     for i in range(1, 13):
         for _ in range(i):
             deck.append(i)
+    deck.append(13)
+    deck.append(13)
     random.shuffle(deck)
 
     return deck
