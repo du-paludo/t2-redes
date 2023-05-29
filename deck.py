@@ -19,3 +19,13 @@ def dealCards(deck):
     message += "0000" + "@"
     message = message.encode()
     return message
+
+def receiveCards(myCards, message):
+    print("Receiving cards...")
+    startIndex = 3 + 20 * id
+    endIndex = startIndex + 20
+    for card in message[startIndex: endIndex]:
+        myCards.append(ord(card) - 48)
+    myCards.sort()
+    print("Cards received: ", end="")
+    print(myCards)
