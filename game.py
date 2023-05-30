@@ -38,7 +38,7 @@ def makePlay(myCards, receivedData, hasLead):
         if 13 in myCards:
             print("Enter number of jokers to throw: ", end="")
             jokersWanted = int(input())
-        return classes.PlayInfo(numberOfCards, typeOfCard, jokersWanted, willPlay)
+        return classes.PlayInfo(numberOfCards+jokersWanted, typeOfCard, jokersWanted, willPlay)
     # Otherwise, he must throw the same number of cards of better value
     else:
         print("Type 0 to pass or 1 to throw %s cards: " % receivedData.numberOfCardsPlayed, end="")
