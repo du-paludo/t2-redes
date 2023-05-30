@@ -34,7 +34,7 @@ sock.bind((UDP_CURRENT_IP, UDP_CURRENT_PORT))
 hasLead = False
 hasToken = False
 state = classes.State.LISTENING
-receivedData = classes.Data(0, 0, 0, 0, 0, "0000")
+receivedData = classes.Data(0, 0, 0, 0, 0, 0, "0000")
 
 if id == 0:
     deck = dk.createDeck()
@@ -57,9 +57,9 @@ while True:
             elif playInfo.willPlay == 0:
                 receivedData.sequenceSkipped += 1
                 MESSAGE = ("@" + str(id) + "2" + str(receivedData.sequenceSkipped) + "0000@").encode()
-            elif gm.isPlayValid(myCards, playInfo):
+            elif gm.isPlayValid(myCards, receivedData, playInfo):
                 receivedData.sequenceSkipped = 0
-                MESSAGE = ("@" + str(id) + "1" + str(receivedData.sequenceSkipped) + chr(playInfo.numberOfCards + 48) + chr(playInfo.typeOfCard + 48) + chr(playInfo.jokersWanted + 4) + "0000" + "@").encode()
+                MESSAGE = ("@" + str(id) + "1" + str(receivedData.sequenceSkipped) + chr(playInfo.numberOfCards + 48) + chr(playInfo.typeOfCard + 48) + chr(playInfo.numberOfJokers + 48) + "0000" + "@").encode()
             else:
                 print("Invalid play.")
                 continue
@@ -91,7 +91,10 @@ while True:
             elif receivedData.play == 1:
                 # Player is the origin of the play
                 if receivedData.origin != id:
-                    print("Player %s threw %s cards of type %s." % (receivedData.origin+1, receivedData.numberOfCardsPlayed, receivedData.typeOfCardPlayed))            # Last player skipped
+                    if receivedData.jokersPlayed == 0:
+                        print("Player %s threw %s cards of type %s." % (receivedData.origin+1, receivedData.numberOfCardsPlayed, receivedData.typeOfCardPlayed))    
+                    else:
+                        print("Player %s threw %s cards of type %s and %s jokers." % (receivedData.origin+1, receivedData.numberOfCardsPlayed, receivedData.typeOfCardPlayed, receivedData.jokersPlayed))
             # Last player skipped
             elif receivedData.play == 2:
                 if receivedData.origin != id:

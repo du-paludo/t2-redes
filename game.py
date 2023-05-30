@@ -1,28 +1,28 @@
 import classes
 
-def isPlayValid(myCards, playInfo):
-    cardsNeeded = playInfo.numberOfCards
-    if cardsNeeded == '0':
+def isPlayValid(myCards, receivedData, playInfo):
+    cardsNeeded = receivedData.numberOfCardsPlayed + receivedData.jokersPlayed
+    if cardsNeeded == 0:
         return True
     else:
         cardsOwned = 0
         for card in myCards:
             if card == playInfo.typeOfCard:
                 cardsOwned += 1
-        if cardsOwned < cardsNeeded:
-            return False
         
         jokersOwned = 0
-
         for card in myCards:
             if card == 13:
                 jokersOwned += 1
-        if jokersOwned < playInfo.jokersWanted:
+        if jokersOwned < playInfo.numberOfJokers:
             return False
         
-        for _ in range(cardsNeeded):
+        if cardsOwned + jokersOwned < cardsNeeded:
+            return False
+        
+        for _ in range(playInfo.numberOfCards):
             myCards.remove(playInfo.typeOfCard)
-        for _ in range(playInfo.jokersWanted):
+        for _ in range(playInfo.numberOfJokers):
             myCards.remove(13)
         return True
     
@@ -33,15 +33,15 @@ def makePlay(myCards, receivedData, hasLead):
         numberOfCards = int(input())
         print("Enter type of card to throw: ", end="")
         typeOfCard = int(input())
-        jokersWanted = 0
+        numberOfJokers = 0
         willPlay = 1
         if 13 in myCards:
             print("Enter number of jokers to throw: ", end="")
-            jokersWanted = int(input())
-        return classes.PlayInfo(numberOfCards+jokersWanted, typeOfCard, jokersWanted, willPlay)
+            numberOfJokers = int(input())
+        return classes.PlayInfo(numberOfCards, typeOfCard, numberOfJokers, willPlay)
     # Otherwise, he must throw the same number of cards of better value
     else:
-        print("Type 0 to pass or 1 to throw %s cards: " % receivedData.numberOfCardsPlayed, end="")
+        print("Type 0 to pass or 1 to throw %s cards: " % (receivedData.numberOfCardsPlayed + receivedData.jokersPlayed), end="")
         willPlay = int(input())
         if willPlay == 0:
             if receivedData.origin == id and receivedData.sequenceSkipped == 3:
@@ -55,7 +55,7 @@ def makePlay(myCards, receivedData, hasLead):
                 return None
             if 13 in myCards:
                 print("Enter number of jokers to throw: ", end="")
-                jokersWanted = int(input())
+                numberOfJokers = int(input())
             else:
-                jokersWanted = 0
-        return classes.PlayInfo(receivedData.numberOfCardsPlayed, typeOfCard, jokersWanted, willPlay)
+                numberOfJokers = 0
+        return classes.PlayInfo(receivedData.numberOfCardsPlayed, typeOfCard, numberOfJokers, willPlay)

@@ -11,6 +11,7 @@ def unpackMessage(receivedData, message):
         receivedData.sequenceSkipped = int(message[3])
         receivedData.numberOfCardsPlayed = ord(message[4]) - 48
         receivedData.typeOfCardPlayed = ord(message[5]) - 48
+        receivedData.jokersPlayed = ord(message[6]) - 48
     elif receivedData.play == 2:
         receivedData.sequenceSkipped = int(message[3])
     
