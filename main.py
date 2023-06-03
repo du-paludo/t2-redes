@@ -78,14 +78,12 @@ while True:
             hasToken = True
         # Else, just reads the message and sends to next player
         elif decodedMessage[0] == '@' and decodedMessage[-1] == '@':
-            package
-        .unpackMessage(receivedData, decodedMessage)
+            package.unpackMessage(receivedData, decodedMessage)
             # Player marks the confirmation of the message
             MESSAGE = (decodedMessage[0:-5 + id] + "1" + decodedMessage[-4 + id:]).encode()
             if receivedData.origin == id:
                 checkConfirmation(receivedData.confirmation, id)
-                MESSAGE = package
-            .passToken()
+                MESSAGE = package.passToken()
             # Player is receiving cards
             if receivedData.play == 0:
                 dk.receiveCards(myCards, decodedMessage, id)     

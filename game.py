@@ -44,6 +44,7 @@ def makePlay(myCards, receivedData, hasLead):
         print("Type 0 to pass or 1 to throw %s cards: " % (receivedData.numberOfCardsPlayed + receivedData.jokersPlayed), end="")
         willPlay = int(input())
         if willPlay == 0:
+            print(receivedData.origin)
             if receivedData.origin == id and receivedData.sequenceSkipped == 3:
                 hasLead = True
             return classes.PlayInfo(0, 0, 0, 0)
