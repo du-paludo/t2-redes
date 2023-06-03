@@ -1,8 +1,8 @@
 import socket
 import classes
 import deck as dk
-import game as gm
-import package as pk
+import game
+import package
 
 # @ = 64
 # 0 = 48
@@ -51,13 +51,13 @@ while True:
         if hasToken:   
             print("My cards: ", end="")
             print(myCards)
-            playInfo = gm.makePlay(myCards, receivedData, hasLead)
+            playInfo = game.makePlay(myCards, receivedData, hasLead)
             if playInfo == None:
                 continue
             elif playInfo.willPlay == 0:
                 receivedData.sequenceSkipped += 1
                 MESSAGE = ("@" + str(id) + "2" + str(receivedData.sequenceSkipped) + "0000@").encode()
-            elif gm.isPlayValid(myCards, receivedData, playInfo):
+            elif game.isPlayValid(myCards, receivedData, playInfo):
                 receivedData.sequenceSkipped = 0
                 MESSAGE = ("@" + str(id) + "1" + str(receivedData.sequenceSkipped) + chr(playInfo.numberOfCards + 48) + chr(playInfo.typeOfCard + 48) + chr(playInfo.numberOfJokers + 48) + "0000" + "@").encode()
             else:
@@ -78,12 +78,14 @@ while True:
             hasToken = True
         # Else, just reads the message and sends to next player
         elif decodedMessage[0] == '@' and decodedMessage[-1] == '@':
-            pk.unpackMessage(receivedData, decodedMessage)
+            package
+        .unpackMessage(receivedData, decodedMessage)
             # Player marks the confirmation of the message
             MESSAGE = (decodedMessage[0:-5 + id] + "1" + decodedMessage[-4 + id:]).encode()
             if receivedData.origin == id:
                 checkConfirmation(receivedData.confirmation, id)
-                MESSAGE = pk.passToken()
+                MESSAGE = package
+            .passToken()
             # Player is receiving cards
             if receivedData.play == 0:
                 dk.receiveCards(myCards, decodedMessage, id)     
