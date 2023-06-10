@@ -17,7 +17,7 @@ def checkConfirmation(code, id):
 
 
 id = int(input())
-ipAddresses = ["10.254.223.35", "10.254.223.37", "10.254.223.38", "10.254.223.39"];
+ipAddresses = ["10.254.223.29", "10.254.223.30", "10.254.223.31", "10.254.223.32"];
 ports = [2637, 2638, 2639, 2640];
 
 UDP_CURRENT_IP = ipAddresses[id]
@@ -48,7 +48,7 @@ myCards = []
 
 while True:
     if state == classes.State.SENDING:
-        if hasToken:   
+        if hasToken:
             print("My cards: ", end="")
             print(myCards)
             playInfo = game.makePlay(myCards, receivedData, hasLead)
@@ -57,7 +57,7 @@ while True:
             elif playInfo.willPlay == 0:
                 receivedData.sequenceSkipped += 1
                 MESSAGE = ("@" + str(id) + "2" + str(receivedData.sequenceSkipped) + "0000@").encode()
-            elif game.isPlayValid(myCards, receivedData, playInfo):
+            elif game.isPlayValid(myCards, receivedData, playInfo, hasLead):
                 receivedData.sequenceSkipped = 0
                 MESSAGE = ("@" + str(id) + "1" + str(receivedData.sequenceSkipped) + chr(playInfo.numberOfCards + 48) + chr(playInfo.typeOfCard + 48) + chr(playInfo.numberOfJokers + 48) + "0000" + "@").encode()
             else:
@@ -83,10 +83,14 @@ while True:
             MESSAGE = (decodedMessage[0:-5 + id] + "1" + decodedMessage[-4 + id:]).encode()
             if receivedData.origin == id:
                 checkConfirmation(receivedData.confirmation, id)
-                MESSAGE = package.passToken()
+                # checks if players won
+                if len(myCards) == 0:
+                    MESSAGE = ("@" + str(id) + "3" + str(receivedData.sequenceSkipped) + "0000" + "0000" + "0000" + "0000" + "@").encode()
+                else:
+                    MESSAGE = package.passToken()
             # Player is receiving cards
             if receivedData.play == 0:
-                dk.receiveCards(myCards, decodedMessage, id)     
+                dk.receiveCards(myCards, decodedMessage, id) 
             # Last player did a play
             elif receivedData.play == 1:
                 # Player is the origin of the play
@@ -98,16 +102,21 @@ while True:
             # Last player skipped
             elif receivedData.play == 2:
                 if receivedData.origin != id:
-                    print("Player %s passed." % (receivedData.origin+1))
-                if receivedData.sequenceSkipped == 4:
-                    print("All the players skipped. Restart the hand.")
-                    hasToken = True
-                    hasLead = True
+                    if receivedData.sequenceSkipped == 4:
+                        print("Player %s passed. Hand restarted." % (receivedData.origin+1))
+                    else:
+                        print("Player %s passed" % (receivedData.origin+1))
+                else:
+                    if receivedData.sequenceSkipped == 4:
+                        print("All players passed. Hand restarted.")
+                        hasLead = True
+                        hasToken = True
             # Last player won
             elif receivedData.play == 3:
                 if receivedData.origin == id:
                     print("Congratulations! You won the game.")
                 else:
                     print("Player %s won the game." % (receivedData.origin+1))
+                    sock.sendto(MESSAGE, (UDP_TARGET_IP, UDP_TARGET_PORT))
                 break
         state = classes.State.SENDING
