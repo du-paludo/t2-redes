@@ -6,7 +6,6 @@ import package
 
 # @ = 64
 # 0 = 48
-# Corrigir PlayInfo
 
 def checkConfirmation(code, id):
     for i in range(4):
@@ -50,20 +49,6 @@ hasLead = False
 hasToken = False
 state = classes.State.LISTENING
 receivedData = classes.Data(0, 0, 0, 0, 0, 0, "0000")
-
-# while True:
-#     sock.sendto("TESTE".encode(), (UDP_TARGET_IP, UDP_TARGET_PORT))
-#     data, addr = sock.recvfrom(1024)
-#     print(data.decode())
-
-# while True:
-#     if id == 0:
-#         sock.sendto("----".encode(), (UDP_TARGET_IP, UDP_TARGET_PORT))
-#         data, addr = sock.recvfrom(1024)
-#         print(data.decode())
-#         if data.decode() == "----":
-#             print("ID 1 broke")
-#             break
 
 if id == 0:
     deck = dk.createDeck()
