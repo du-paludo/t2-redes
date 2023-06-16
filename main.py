@@ -3,6 +3,7 @@ import classes
 import deck as dk
 import game
 import package
+import random
 
 # @ = 64
 # 0 = 48
@@ -51,6 +52,21 @@ state = classes.State.LISTENING
 receivedData = classes.Data(0, 0, 0, 0, 0, 0, "0000")
 
 if id == 0:
+    sock.settimeout(1)
+    while True:
+        MESSAGE = str(random.randint(0, 5000)).encode()
+        sock.sendto(MESSAGE, (UDP_TARGET_IP, UDP_TARGET_PORT))
+        received = False
+        try:
+            data, addr = sock.recvfrom(1024)
+            received = True
+        except socket.timeout as e:
+            continue
+        if received and data.decode() == MESSAGE.decode():
+            sock.settimeout(None)
+            break
+
+if id == 0:
     deck = dk.createDeck()
     state = classes.State.LISTENING
     hasToken = True
@@ -86,6 +102,7 @@ while True:
         # Receives data and decodes it
         data, addr = sock.recvfrom(1024)
         decodedMessage = data.decode()
+        MESSAGE = decodedMessage.encode()
         #print("Received message: %s" % decodedMessage)
         # If receives the token, set it to true
         if decodedMessage == "@@":
