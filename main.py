@@ -15,18 +15,33 @@ def checkConfirmation(code, id):
         if code[i] == '0':
             print("Machine %d didn't receive the message." % i)
 
+ipAddresses = []
+ports = []
 
-id = int(input())
-ipAddresses = ["10.254.223.29", "10.254.223.30", "10.254.223.31", "10.254.223.32"];
-ports = [2637, 2638, 2639, 2640];
+with open('config.txt', 'r') as file:
+    lines = file.readlines()
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if i == 0:
+            numPlayers = int(line)
+        else:
+            ip, port = line.split(':')
+            ipAddresses.append(ip)
+            ports.append(int(port))
+
+machine_ip = socket.gethostbyname(socket.gethostname())
+id = ipAddresses.index(machine_ip)
+print("ID: %s" % id)
+print("Machine IP: %s" % ipAddresses[id])
+print("Receive port: %s" % ports[id])
 
 UDP_CURRENT_IP = ipAddresses[id]
 UDP_CURRENT_PORT = ports[id]
 UDP_TARGET_IP = ipAddresses[(id + 1) % 4]
 UDP_TARGET_PORT = ports[(id + 1) % 4]
 
-print("UDP target IP: %s" % UDP_TARGET_IP)
-print("UDP target port: %s" % UDP_TARGET_PORT)
+print("Target IP: %s" % UDP_TARGET_IP)
+print("Target port: %s" % UDP_TARGET_PORT)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_CURRENT_IP, UDP_CURRENT_PORT))
@@ -35,6 +50,20 @@ hasLead = False
 hasToken = False
 state = classes.State.LISTENING
 receivedData = classes.Data(0, 0, 0, 0, 0, 0, "0000")
+
+# while True:
+#     sock.sendto("TESTE".encode(), (UDP_TARGET_IP, UDP_TARGET_PORT))
+#     data, addr = sock.recvfrom(1024)
+#     print(data.decode())
+
+# while True:
+#     if id == 0:
+#         sock.sendto("----".encode(), (UDP_TARGET_IP, UDP_TARGET_PORT))
+#         data, addr = sock.recvfrom(1024)
+#         print(data.decode())
+#         if data.decode() == "----":
+#             print("ID 1 broke")
+#             break
 
 if id == 0:
     deck = dk.createDeck()
