@@ -1,25 +1,115 @@
-# Real-time data transmission using UDP
+# The Great Damulti Game
 
-The goal of this project was to implement a UDP connection to transmit real-time data. In the project, we implemented both the client and the server in Python, and for data collection, we used the Open Meteo API, which provides the temperature of a location in real-time based on latitude and longitude provided in the source code.
+This project implements a multiplayer card game using UDP sockets for communication between machines. The game involves dealing cards, making plays, and passing tokens between players.
 
-## Server
+## Files
 
-The server was built with the entire logic for storing and distributing data collected by the API. To communicate with multiple clients, threads were implemented to send and receive data simultaneously.
+- `main.py`: The main script that sets up the game and handles communication between players.
+- `classes.py`: Contains the class definitions for `State`, `Data`, and `PlayInfo`.
+- `deck.py`: Contains functions for creating and dealing a deck of cards.
+- `game.py`: Contains functions for validating plays and making plays.
+- `package.py`: Contains functions for passing tokens and unpacking messages.
+- `config.txt`: Configuration file with the number of players and their IP addresses and ports.
 
-There are three threads on the server. One is responsible for listening on the designated port (5968) to see if any client wants to subscribe to the broadcast list. The second thread is responsible for sending packets to clients registered on the broadcast list. The third thread is responsible for receiving user input in case they wish to terminate the program.
+## Usage
 
-The packets sent are the same for each client. They contain only two fields: the sequence number of that packet in the stream and the temperature in Curitiba.
+### Configuration
 
-To terminate the server, simply type "exit" or "quit" in the command line. If the user wishes to change the interval between each sent packet, they can type "setinterval x", where x is the duration in seconds of the interval.
+1. **config.txt**:
+    - The first line specifies the number of players.
+    - Each subsequent line specifies the IP address and port of each player in the format `IP:PORT`.
 
-At the end of the server's execution, some statistics are displayed in the standard output, such as the total number of packets sent and the total number of connected clients.
+    Example:
+    ```txt
+    4
+    192.168.1.2:5000
+    192.168.1.3:5001
+    192.168.1.4:5002
+    192.168.1.5:5003
+    ```
 
-## Client
+### Execution
 
-When running the client program, the server's IP address is requested. After that, a subscription request message is automatically sent to the server. Upon receiving the message, the server adds the client to the broadcast list, and the client starts receiving data sent by the server. These data (sequence number and temperature) are displayed in the standard output with each received packet.
+1. Ensure all players have their IP addresses and ports correctly specified in `config.txt`.
+2. Run the main script on each machine:
 
-The client checks the sequence number to determine if any packets were lost or if they arrived out of order.
+    ```sh
+    python main.py
+    ```
 
-When the client wishes to unsubscribe, they should type "unsubscribe" in the command line. Upon typing this command, a message is sent to the server, which removes the client from the broadcast list. Then, a report is displayed on the screen containing data about the received packets.
+### Game Flow
 
-The concept of threading was also used on the client side, to receive data from the server and read keyboard input simultaneously.
+1. **Initialization**:
+    - Each machine reads its IP address and port from `config.txt` and identifies its ID.
+    - The first player (ID 0) starts the game by generating a random message and sending it to the next player.
+    - Once the message is confirmed, the deck is created and cards are dealt.
+
+2. **Gameplay**:
+    - Players take turns based on the token passing mechanism.
+    - Each player makes a play based on the current game state.
+    - Messages are sent between players to update the game state and confirm actions.
+    - Players can either play cards or pass their turn based on the game rules.
+
+3. **Winning**:
+    - The game continues until a player wins by playing all their cards.
+    - The winning player is announced, and the game ends.
+
+### Functions
+
+#### Main Script (`main.py`)
+
+- **checkConfirmation(code, id)**:
+    Checks if all players have received the message.
+
+#### Deck Management (`deck.py`)
+
+- **createDeck()**:
+    Creates and shuffles a deck of cards.
+
+- **dealCards(deck)**:
+    Deals cards to players and returns the initial message.
+
+- **receiveCards(myCards, message, id)**:
+    Receives and sorts cards for a player.
+
+#### Game Logic (`game.py`)
+
+- **isPlayValid(myCards, receivedData, playInfo, hasLead)**:
+    Validates if a play is allowed based on the current game state.
+
+- **makePlay(myCards, receivedData, hasLead)**:
+    Prompts the player to make a play and returns the play information.
+
+#### Message Handling (`package.py`)
+
+- **passToken()**:
+    Passes the token to the next player.
+
+- **unpackMessage(receivedData, message)**:
+    Unpacks a received message and updates the game state.
+
+## Classes
+
+#### `State` (in `classes.py`)
+
+- **LISTENING**: The state where the player is waiting for a message.
+- **SENDING**: The state where the player is sending a message.
+
+#### `Data` (in `classes.py`)
+
+- **Attributes**:
+    - `origin`: ID of the originating player.
+    - `play`: Type of play (0: receiving cards, 1: play, 2: skip, 3: win).
+    - `sequenceSkipped`: Number of consecutive skips.
+    - `numberOfCardsPlayed`: Number of cards played.
+    - `typeOfCardPlayed`: Type of card played.
+    - `jokersPlayed`: Number of jokers played.
+    - `confirmation`: Confirmation string for message receipt.
+
+#### `PlayInfo` (in `classes.py`)
+
+- **Attributes**:
+    - `numberOfCards`: Number of cards to play.
+    - `typeOfCard`: Type of card to play.
+    - `numberOfJokers`: Number of jokers to play.
+    - `willPlay`: Indicates if the player will play or pass.
